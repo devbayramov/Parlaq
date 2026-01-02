@@ -97,7 +97,7 @@ export default function ProfileScreen() {
                 borderColor: isDark ? Colors.dark.background : Colors.light.background,
               },
             ]}>
-            <IconSymbol name="pencil" size={16} color="#ffffff" />
+            <IconSymbol name="photo.fill" size={20} color="#ffffff" />
           </View>
         </View>
         <ThemedText type="title" style={styles.profileName}>
@@ -190,12 +190,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   profileName: {
     marginBottom: 4,
