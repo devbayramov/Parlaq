@@ -1,19 +1,53 @@
+import PasswordInputField from "@/components/ui/PasswordInputField";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import TextInputField from "@/components/ui/TextInputField";
+import { auth } from "@/services/firebaseConfig";
 import { router } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Xəta", "E-mail və şifrə məcburidir.");
+      Alert.alert("Xəta", "E-mail və parol məcburidir.");
       return;
     }
-    // Burada login sorğusunu edəcəksən.
+
+    // Basic email validation
+    if (!email.includes("@")) {
+      Alert.alert("Xəta", "Düzgün email adresi daxil edin.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Sign in with Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      router.replace("/(tabs)")
+      
+    
+    } catch (error: any) {
+      let errorMessage = "Daxil olmaq zamanı xəta baş verdi.";
+      
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "Bu email adresi ilə qeydiyyatdan keçən istifadəçi yoxdur.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Parol düzgün deyil.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Email adresi düzgün deyil.";
+      } else if (error.code === "auth/user-disabled") {
+        errorMessage = "Bu hesab deaktivdir.";
+      }
+      
+      Alert.alert("Xəta", errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,7 +56,7 @@ export default function Login() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.inner}>
-        <Text style={styles.title}>Вход</Text>
+        <Text style={styles.title}>Daxil Olun</Text>
 
         <View style={styles.form}>
           <TextInputField
@@ -31,23 +65,27 @@ export default function Login() {
             value={email}
             onChangeText={setEmail}
           />
-          <TextInputField
-            placeholder="Пароль"
-            secureTextEntry
-            style={{ marginTop: 12 }}
+          <PasswordInputField
+            placeholder="Parol"
             value={password}
             onChangeText={setPassword}
           />
         </View>
 
         <View style={styles.buttonWrapper}>
-          <PrimaryButton title="Войти" onPress={handleLogin} />
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#073D3D" />
+            </View>
+          ) : (
+            <PrimaryButton title="Daxil olun" onPress={handleLogin} />
+          )}
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.bottomText}>У вас нет аккаунта? </Text>
+          <Text style={styles.bottomText}>Hesabınız yoxdur? </Text>
           <TouchableOpacity onPress={() => router.push("/auth/register")}>
-            <Text style={[styles.bottomText, styles.bottomLink]}>Зарегистрироваться</Text>
+            <Text style={[styles.bottomText, styles.bottomLink]}>Qeydiyyatdan keç</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -74,9 +112,15 @@ const styles = StyleSheet.create({
   },
   form: {
     width: "100%",
+    gap: 16,
   },
   buttonWrapper: {
     marginTop: 40,
+  },
+  loadingContainer: {
+    paddingVertical: 14,
+    justifyContent: "center",
+    alignItems: "center",
   },
   bottomRow: {
     marginTop: 16,

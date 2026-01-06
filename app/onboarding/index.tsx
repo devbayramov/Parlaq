@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 import type { FlatList as FlatListType } from "react-native";
 import { Dimensions, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
-
 export default function Index() {
     const [index, setIndex] = useState(0);
     const flatListRef = useRef<FlatListType>(null);
@@ -12,25 +11,22 @@ export default function Index() {
     const slides = [
         {
           image: require('../../assets/images/kangaroo1.png'),
-          title: "Healthy Kids",
-          desc: "Забота о спине - легко и весело\n\nИгры, советы и упражнения для здоровья вашей спины",
+          title: "İdman Hərəkətləri",
+          desc: "Sağlam əzələ və kemiklər üçün hər gün sadə idman hərəkətləri edin. Əriyən, çevirmə və uzunlaşdırma hərəkətləri sizi güclü və sağlam saxlayır.",
         },
         {
           image: require('../../assets/images/kangaroo2.png'),
-          title: "Healthy Kids",
-          desc: "Забота о спине - легко и весело\n\nИгры, советы и упражнения для здоровья вашей спины",
+          title: "Tibbi Yoxlanışlar",
+          desc: "Mütəşəkkil tibbi yoxlanışlar uşağın sağlığını qoruyur. Boy, çəki və digər əhəmiyyətli göstəriciləri izləyin və həkim məsləhətlərini dinləyin.",
         },
         {
           image: require('../../assets/images/kangaroo3.png'),
-          title: "Healthy Kids",
-          desc: "Забота о спине - легко и весело\n\nИгры, советы и упражнения для здоровья вашей спины",
+          title: "Testlər və IQ",
+          desc: "Zəka testləri və digər psikoloji testlər uşağın intellektual inkişafını ölçür. Düşüncə, yaddaş və yaradıcılığı inkişaf etdirmək üçün məşqlər edin.",
         },
       ];
 
-
-
-    
-      const handleNext = () => {
+    const handleNext = () => {
         if (index < slides.length - 1) {
           setIndex(index + 1);
           flatListRef.current && flatListRef.current.scrollToIndex({ index: index + 1 });
@@ -38,9 +34,14 @@ export default function Index() {
             //@ts-ignore
           router.replace("/auth/register"); 
         }
-      };
+    };
+
+    const handleSkip = () => {
+        //@ts-ignore
+      router.replace("/auth/register");
+    };
     
-      return (
+    return (
         <View style={{ flex: 1, backgroundColor: "#D1DEBE" }}>
           <FlatList
             ref={flatListRef}
@@ -63,19 +64,20 @@ export default function Index() {
                   alignItems: "center",
                   justifyContent: "center",
                   paddingHorizontal: 24,
+                  paddingTop: 40,
                 }}
               >
-                {/* Yuxarıda başlıq */}
+                {/* Başlıq */}
                 <Text
                   style={{
                     color: "#073D3D",
-                    fontWeight: "bold",
-                    fontSize: 18,
+                    fontWeight: "700",
+                    fontSize: 24,
                     textAlign: "center",
-                    marginBottom: 24,
+                    marginBottom: 20,
                   }}
                 >
-                  Healthy Kids
+                  {item.title}
                 </Text>
 
                 {/* Şəkil */}
@@ -85,28 +87,17 @@ export default function Index() {
                   resizeMode="contain"
                 />
 
-                {/* Alt mətni daha yığcam box içində saxla */}
-                <View style={{ width: "80%", alignItems: "center" }}>
-                  <Text
-                    style={{
-                      color: "#073D3D",
-                      fontWeight: "bold",
-                      fontSize: 20,
-                      textAlign: "center",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Забота о спине -{"\n"}легко и весело
-                  </Text>
+                {/* Mətn */}
+                <View style={{ width: "85%", alignItems: "center" }}>
                   <Text
                     style={{
                       color: "#1A2B2B",
-                      fontSize: 14,
+                      fontSize: 15,
                       textAlign: "center",
-                      lineHeight: 20,
+                      lineHeight: 22,
                     }}
                   >
-                    Игры, советы и упражнения{"\n"}для здоровья вашей спины
+                    {item.desc}
                   </Text>
                 </View>
               </View>
@@ -115,6 +106,7 @@ export default function Index() {
             extraData={index}
           />
         
+          {/* Slide göstəricisi (Dots) */}
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
             {slides.map((_, i) => (
               <View
@@ -129,9 +121,29 @@ export default function Index() {
               />
             ))}
           </View>
-          <TouchableOpacity onPress={handleNext} style={{ backgroundColor: "#073D3D", borderRadius: 50, width: "80%", alignSelf: "center", padding: 15, marginBottom: 40 }}>
-            <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold", fontSize: 17 }}>Next</Text>
-          </TouchableOpacity>
+
+          {/* Düymələr */}
+          <View style={{ paddingHorizontal: 24, marginBottom: 40, gap: 12 }}>
+            <TouchableOpacity 
+              onPress={handleNext} 
+              style={{ backgroundColor: "#073D3D", borderRadius: 50, width: "100%", paddingVertical: 15 }}
+            >
+              <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold", fontSize: 16 }}>
+                {index === slides.length - 1 ? "Başla" : "Sonraki"}
+              </Text>
+            </TouchableOpacity>
+
+            {index < slides.length - 1 && (
+              <TouchableOpacity 
+                onPress={handleSkip}
+                style={{ paddingVertical: 12 }}
+              >
+                <Text style={{ color: "#073D3D", textAlign: "center", fontWeight: "600", fontSize: 14 }}>
+                  Keç
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       );
     }
