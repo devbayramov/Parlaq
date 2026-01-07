@@ -52,7 +52,7 @@ const translations = {
 };
 
 export default function Profile() {
-  const [language, setLanguage] = useState("az");
+  const [language, setLanguage] = useState<"az" | "en" | "ru">("az");
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const t = translations[language];
 
