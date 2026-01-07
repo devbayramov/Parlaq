@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "healthyKids",
-    "slug": "healthyKids",
+    "name": "Parlaq",
+    "slug": "parlaq",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "healthykids",
+    "scheme": "parlaq",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
