@@ -22,7 +22,6 @@ export default function Tests() {
       title: t.iqTests,
       boxes: [
         { id: 1, icon: "brain", title: t.logic, route: "/tests/intelligence" },
-        { id: 2, icon: "calculator", title: t.mathematics, route: "/tests/mathematics" },
       ],
     },
     {
@@ -30,13 +29,6 @@ export default function Tests() {
       boxes: [
         { id: 3, icon: "thought-bubble", title: t.personality, route: "/tests/personality" },
         { id: 4, icon: "heart", title: t.emotional, route: "/tests/emotional" },
-      ],
-    },
-    {
-      title: t.funTests,
-      boxes: [
-        { id: 5, icon: "gamepad", title: t.game, route: "/tests/game" },
-        { id: 6, icon: "palette", title: t.art, route: "/tests/art" },
       ],
     },
   ];

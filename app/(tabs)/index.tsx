@@ -172,11 +172,8 @@ export default function Home() {
 
   const quickTests: QuickTest[] = [
     { id: "1", title: "Məntiq", icon: "brain", color: "#6C5CE7", route: "/tests/intelligence" },
-    { id: "2", title: "Riyaziyyat", icon: "calculator", color: "#00B894", route: "/tests/mathematics" },
     { id: "3", title: "Şəxsiyyət", icon: "account-heart", color: "#E17055", route: "/tests/personality" },
     { id: "4", title: "Emosional", icon: "heart", color: "#D63031", route: "/tests/emotional" },
-    { id: "5", title: "Oyun", icon: "gamepad-variant", color: "#0984E3", route: "/tests/game" },
-    { id: "6", title: "Sənət", icon: "palette", color: "#A29BFE", route: "/tests/art" },
   ];
 
   const quickExams: QuickExam[] = [

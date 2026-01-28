@@ -1,5 +1,8 @@
+import { auth, db } from "@/services/firebaseConfig";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface TestOption {
@@ -7,17 +10,34 @@ interface TestOption {
   title: string;
   icon: string;
   route: string;
+  minAge?: number;
 }
 
 export default function EmotionalTests() {
   const router = useRouter();
+  const [userAge, setUserAge] = useState<number>(0);
 
-  const tests: TestOption[] = [
+  useEffect(() => {
+    const fetchUserAge = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const age = parseInt(userDoc.data().age) || 0;
+          setUserAge(age);
+        }
+      }
+    };
+    fetchUserAge();
+  }, []);
+
+  const allTests: TestOption[] = [
     {
       id: "1",
-      title: "Empatiya",
-      icon: "heart-multiple",
-      route: "/tests/emotional-detail/empathy",
+            title: "Rifah Testi",
+      icon: "emoticon-happy",
+      route: "/tests/emotional-detail/wellbeing",
+
     },
     {
       id: "2",
@@ -37,7 +57,28 @@ export default function EmotionalTests() {
       icon: "fire",
       route: "/tests/emotional-detail/motivation",
     },
+    {
+      id: "5",
+      title: "Empatiya",
+      icon: "heart-multiple",
+      route: "/tests/emotional-detail/empathy",
+    },
+    {
+      id: "6",
+      title: "Psixi Sorğu",
+      icon: "head-question",
+      route: "/tests/emotional-detail/srq20",
+    },
+    {
+      id: "7",
+      title: "Alkoqol Testi",
+      icon: "glass-wine",
+      route: "/tests/emotional-detail/audit",
+      minAge: 18,
+    },
   ];
+
+  const tests = allTests.filter((test) => !test.minAge || userAge >= test.minAge);
 
   return (
     <View style={styles.container}>
