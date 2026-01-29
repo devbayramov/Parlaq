@@ -5,9 +5,9 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useEffect, useState } from "react";
-import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TextInputField from "../../components/ui/TextInputField";
 
 export default function Profile() {
@@ -48,39 +48,78 @@ export default function Profile() {
   };
 
   const storage = getStorage();
+  const [isUploading, setIsUploading] = useState(false);
+
+  const uriToBlob = (uri: string): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => {
+        resolve(xhr.response);
+      };
+      xhr.onerror = () => {
+        reject(new Error("Failed to convert URI to blob"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+  };
 
   const handlePhotoChange = async () => {
     const user = auth.currentUser;
     if (!user) return;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("İcazə lazımdır", "Şəkil seçmək üçün foto kitabxanasına giriş icazəsi verin.");
+      return;
+    }
 
-    if (!result.canceled) {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets[0]) return;
+
+      setIsUploading(true);
       const newPhotoUri = result.assets[0].uri;
 
-      // Delete old photo from Firebase Storage
-      if (userData.photoURL) {
-        const oldPhotoRef = ref(storage, userData.photoURL);
-        await deleteObject(oldPhotoRef).catch((error) => {
-          console.error("Failed to delete old photo:", error);
-        });
+      // Delete old photo from Firebase Storage if exists
+      if (userData.photoURL && userData.photoURL.includes("firebase")) {
+        try {
+          const oldPhotoRef = ref(storage, `profile_photos/${user.uid}`);
+          await deleteObject(oldPhotoRef);
+        } catch (error) {
+          console.log("No old photo to delete or delete failed");
+        }
       }
 
+      // Convert URI to blob - works on both iOS and Android
+      const blob = await uriToBlob(newPhotoUri);
+
       // Upload new photo to Firebase Storage
-      const photoRef = ref(storage, `profile_photos/${user.uid}`);
-      const response = await fetch(newPhotoUri);
-      const blob = await response.blob();
-      await uploadBytes(photoRef, blob);
+      const fileName = `profile_photos/${user.uid}_${Date.now()}.jpg`;
+      const photoRef = ref(storage, fileName);
+
+      await uploadBytesResumable(photoRef, blob, {
+        contentType: "image/jpeg",
+      });
 
       // Get the download URL and update Firestore
       const downloadURL = await getDownloadURL(photoRef);
-      handleInputChange("photoURL", downloadURL);
+
       await updateDoc(doc(db, "users", user.uid), { photoURL: downloadURL });
+      setUserData((prev) => ({ ...prev, photoURL: downloadURL }));
+
+    } catch (error) {
+      console.error("Photo upload error:", error);
+      Alert.alert("Xəta", "Şəkil yüklənərkən xəta baş verdi. Yenidən cəhd edin.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -116,8 +155,16 @@ export default function Profile() {
           ) : (
             <Text style={styles.initials}>PP</Text>
           )}
-          <TouchableOpacity style={styles.cameraIconButton} onPress={handlePhotoChange}>
-            <MaterialCommunityIcons name="camera" size={20} color="#FFFFFF" />
+          <TouchableOpacity
+            style={styles.cameraIconButton}
+            onPress={handlePhotoChange}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <MaterialCommunityIcons name="camera" size={20} color="#FFFFFF" />
+            )}
           </TouchableOpacity>
         </View>
       </View>
