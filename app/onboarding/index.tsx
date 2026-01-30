@@ -1,7 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import type { FlatList as FlatListType } from "react-native";
 import { Dimensions, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+
+const ONBOARDING_COMPLETE_KEY = "onboarding_complete";
 
 export default function Index() {
     const [index, setIndex] = useState(0);
@@ -26,18 +29,18 @@ export default function Index() {
         },
       ];
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (index < slides.length - 1) {
           setIndex(index + 1);
           flatListRef.current && flatListRef.current.scrollToIndex({ index: index + 1 });
         } else {
-            //@ts-ignore
-          router.replace("/auth/register"); 
+          await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, "true");
+          router.replace("/auth/register");
         }
     };
 
-    const handleSkip = () => {
-        //@ts-ignore
+    const handleSkip = async () => {
+      await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, "true");
       router.replace("/auth/register");
     };
     
