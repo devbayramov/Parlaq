@@ -43,6 +43,10 @@ export default function Profile() {
   }, []);
 
   const handleInputChange = (field: keyof typeof userData, value: string) => {
+    // Filter to numbers only for weight and height fields
+    if (field === "weight" || field === "height") {
+      value = value.replace(/[^0-9.]/g, "");
+    }
     setUserData((prev) => ({ ...prev, [field]: value }));
     setIsEditing(true);
   };
@@ -202,12 +206,14 @@ export default function Profile() {
         <TextInputField
           placeholder={t.weightKg}
           keyboardType="numeric"
+          maxLength={3}
           value={userData.weight}
           onChangeText={(value) => handleInputChange("weight", value)}
         />
         <TextInputField
           placeholder={t.heightCm}
           keyboardType="numeric"
+          maxLength={3}
           value={userData.height}
           onChangeText={(value) => handleInputChange("height", value)}
         />
@@ -336,6 +342,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     padding: 25,
+    paddingBottom: 100,
     backgroundColor: "#D1DEBE",
     width: "100%",
     height: "100%",

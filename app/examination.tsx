@@ -25,7 +25,7 @@ export default function Examination() {
     {
       id: "2",
       title: t.scoliosis,
-      icon: "spine",
+      icon: "human-male-height",
       route: "/examination-detail/scoliosis",
     },
     {

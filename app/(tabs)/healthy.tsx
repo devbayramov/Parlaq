@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   bottomBox: {
     flex: 0.4,
     margin: 70,
+    marginBottom: 100,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 15,

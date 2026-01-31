@@ -4,7 +4,7 @@ import ExaminationDetailComponent, {
 
 const scioliosisTest: ExaminationTest = {
   title: "Skolyoz",
-  icon: "spine",
+  icon: "human-male-height",
   steps: [
     {
       id: "1",

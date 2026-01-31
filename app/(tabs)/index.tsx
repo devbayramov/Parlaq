@@ -178,7 +178,7 @@ export default function Home() {
 
   const quickExams: QuickExam[] = [
     { id: "1", title: "Göz", icon: "eye", route: "/examination-detail/eye" },
-    { id: "2", title: "Skolyoz", icon: "spine", route: "/examination-detail/scoliosis" },
+    { id: "2", title: "Skolyoz", icon: "human-male-height", route: "/examination-detail/scoliosis" },
     { id: "3", title: "Ayaq", icon: "foot-print", route: "/examination-detail/foot" },
     { id: "4", title: "Sinir", icon: "brain", route: "/examination-detail/nerve" },
   ];
@@ -438,8 +438,9 @@ export default function Home() {
                     placeholder="Çəki (kq)"
                     placeholderTextColor="rgba(255,255,255,0.5)"
                     keyboardType="numeric"
+                    maxLength={3}
                     value={tempWeight}
-                    onChangeText={setTempWeight}
+                    onChangeText={(text) => setTempWeight(text.replace(/[^0-9.]/g, ""))}
                   />
                 </View>
 
@@ -451,7 +452,7 @@ export default function Home() {
                     placeholderTextColor="rgba(255,255,255,0.5)"
                     keyboardType="numeric"
                     value={tempHeight}
-                    onChangeText={setTempHeight}
+                    onChangeText={(text) => setTempHeight(text.replace(/[^0-9.]/g, ""))}
                   />
                 </View>
               </View>
