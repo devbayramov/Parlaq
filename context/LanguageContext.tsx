@@ -33,7 +33,7 @@ interface Translations {
   sportActivities: string;
   quickLinks: string;
   dailyTip: string;
-  dailyTipText: string;
+  dailyTips: string[];
 
   // BMI
   bmiTitle: string;
@@ -154,7 +154,18 @@ const translations: Record<Language, Translations> = {
     sportActivities: "İdman Hərəkətləri",
     quickLinks: "Sürətli Keçidlər",
     dailyTip: "Günün Məsləhəti",
-    dailyTipText: "Gündə ən azı 30 dəqiqə fiziki aktivlik sağlamlığınız üçün faydalıdır!",
+    dailyTips: [
+      "Gündə ən azı 30 dəqiqə fiziki aktivlik sağlamlığınız üçün faydalıdır!",
+      "Gündə 8 stəkan su içmək bədəninizi hidratlaşdırır və enerjinizi artırır.",
+      "Yaxşı yuxu sağlamlığın əsasıdır - gecə 7-9 saat yatmağa çalışın.",
+      "Meyvə və tərəvəz yeməyi unutmayın - onlar vitaminlərlə zəngindir!",
+      "Düzgün oturuş vəziyyəti onurğa sağlamlığınız üçün çox vacibdir.",
+      "Gözlərinizi qoruyun - ekrana baxarkən hər 20 dəqiqədə fasilə verin.",
+      "Səhər yeməyi günün ən vacib yeməyidir - onu qaçırmayın!",
+      "Stressdən uzaq durmaq üçün dərin nəfəs almağı unutmayın.",
+      "Ailənizlə vaxt keçirmək emosional sağlamlığınız üçün faydalıdır.",
+      "Kitab oxumaq beyninizi gücləndirir və yaddaşınızı yaxşılaşdırır.",
+    ],
 
     // BMI
     bmiTitle: "Bədən Kütlə İndeksi",
@@ -271,7 +282,18 @@ const translations: Record<Language, Translations> = {
     sportActivities: "Sport Activities",
     quickLinks: "Quick Links",
     dailyTip: "Daily Tip",
-    dailyTipText: "At least 30 minutes of physical activity per day is beneficial for your health!",
+    dailyTips: [
+      "At least 30 minutes of physical activity per day is beneficial for your health!",
+      "Drinking 8 glasses of water daily keeps your body hydrated and boosts energy.",
+      "Good sleep is the foundation of health - try to sleep 7-9 hours at night.",
+      "Don't forget to eat fruits and vegetables - they are rich in vitamins!",
+      "Proper sitting posture is very important for your spine health.",
+      "Protect your eyes - take a break every 20 minutes when looking at the screen.",
+      "Breakfast is the most important meal of the day - don't skip it!",
+      "Remember to take deep breaths to stay away from stress.",
+      "Spending time with family is good for your emotional health.",
+      "Reading books strengthens your brain and improves your memory.",
+    ],
 
     // BMI
     bmiTitle: "Body Mass Index",
@@ -388,7 +410,18 @@ const translations: Record<Language, Translations> = {
     sportActivities: "Спортивные упражнения",
     quickLinks: "Быстрые ссылки",
     dailyTip: "Совет дня",
-    dailyTipText: "Минимум 30 минут физической активности в день полезны для вашего здоровья!",
+    dailyTips: [
+      "Минимум 30 минут физической активности в день полезны для вашего здоровья!",
+      "8 стаканов воды в день поддерживают гидратацию и повышают энергию.",
+      "Хороший сон - основа здоровья. Старайтесь спать 7-9 часов ночью.",
+      "Не забывайте есть фрукты и овощи - они богаты витаминами!",
+      "Правильная осанка очень важна для здоровья позвоночника.",
+      "Берегите глаза - делайте перерыв каждые 20 минут при работе с экраном.",
+      "Завтрак - самый важный прием пищи. Не пропускайте его!",
+      "Не забывайте глубоко дышать, чтобы избежать стресса.",
+      "Время с семьей полезно для вашего эмоционального здоровья.",
+      "Чтение книг укрепляет мозг и улучшает память.",
+    ],
 
     // BMI
     bmiTitle: "Индекс массы тела",

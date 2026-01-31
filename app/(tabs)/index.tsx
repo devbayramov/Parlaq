@@ -194,6 +194,14 @@ export default function Home() {
   const bmiStatus = bmi ? getBMIStatus(parseFloat(bmi)) : null;
   const daysUntilUpdate = getDaysUntilNextUpdate();
 
+  // Get daily tip based on current date (same tip throughout the day)
+  const getDailyTip = () => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    const tipIndex = dayOfYear % t.dailyTips.length;
+    return t.dailyTips[tipIndex];
+  };
+
   return (
     <>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -393,7 +401,7 @@ export default function Home() {
             <View style={styles.tipContent}>
               <Text style={styles.tipTitle}>{t.dailyTip}</Text>
               <Text style={styles.tipText}>
-                {t.dailyTipText}
+                {getDailyTip()}
               </Text>
             </View>
           </View>
