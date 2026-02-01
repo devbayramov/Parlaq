@@ -8,7 +8,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -49,11 +48,8 @@ export default function Home() {
       const { language, setLanguage, t } = useLanguage();
   const scrollX = useRef(new Animated.Value(0)).current;
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
     weight: "",
     height: "",
-    photoURL: "",
     bmiLastUpdated: null as number | null,
   });
 
@@ -71,11 +67,8 @@ export default function Home() {
         if (userDoc.exists()) {
           const data = userDoc.data();
           setUserData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
             weight: data.weight || "",
             height: data.height || "",
-            photoURL: data.photoURL || "",
             bmiLastUpdated: data.bmiLastUpdated || null,
           });
 
@@ -205,30 +198,6 @@ export default function Home() {
   return (
     <>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Welcome Header */}
-        
-          <View style={styles.headerContent}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.greeting}>{t.greeting}</Text>
-              <Text style={styles.userName}>
-                {userData.firstName || "İstifadəçi"} 👋
-              </Text>
-
-            </View>
-            <TouchableOpacity
-              style={styles.profileButton}
-              onPress={() => router.push("/(tabs)/profile")}
-            >
-              {userData.photoURL ? (
-                <Image source={{ uri: userData.photoURL }} style={styles.profileImage} />
-              ) : (
-                <View style={styles.profilePlaceholder}>
-                  <MaterialCommunityIcons name="account" size={30} color="#fff" />
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-
         {/* BMI Alert Banner */}
         {showBmiAlert && (
           <TouchableOpacity
@@ -517,60 +486,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#D1DEBE",
   },
 
-  headerContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-        paddingTop: 10,
-    paddingBottom: 0,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 16,
-    color: "#073D3D",
-    opacity: 0.8,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#073D3D",
-    marginTop: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#073D3D",
-    opacity: 0.7,
-    marginTop: 4,
-  },
-  profileButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    overflow: "hidden",
-    borderWidth: 3,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  profileImage: {
-    width: "100%",
-    height: "100%",
-  },
-  profilePlaceholder: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#073D3D",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   // Alert Banner
   alertBanner: {
     marginHorizontal: 20,
