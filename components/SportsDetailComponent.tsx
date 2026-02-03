@@ -2,6 +2,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+    Image,
     ScrollView,
     StyleSheet,
     Text,
@@ -16,6 +17,7 @@ export interface ExerciseStep {
   duration: number; // in seconds
   reps?: string;
   icon: string;
+  image?: string; // URL for exercise demonstration image
 }
 
 export interface SportsTest {
@@ -190,11 +192,19 @@ export default function SportsDetailComponent({
         {/* Exercise Box */}
         <View style={styles.contentBox}>
           <View style={styles.iconContainer}>
-            <MaterialCommunityIcons
-              name={step.icon as any}
-              size={50}
-              color="#A3C9A8"
-            />
+            {step.image ? (
+              <Image
+                source={{ uri: step.image }}
+                style={styles.exerciseImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={step.icon as any}
+                size={50}
+                color="#A3C9A8"
+              />
+            )}
           </View>
 
           <View style={styles.divider} />
@@ -329,6 +339,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",
     marginBottom: 12,
+  },
+  exerciseImage: {
+    width: 200,
+    height: 150,
+    borderRadius: 10,
   },
   divider: {
     height: 2,

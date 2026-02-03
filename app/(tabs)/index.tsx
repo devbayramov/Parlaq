@@ -50,6 +50,7 @@ export default function Home() {
   const [userData, setUserData] = useState({
     weight: "",
     height: "",
+    age: "",
     bmiLastUpdated: null as number | null,
   });
 
@@ -69,6 +70,7 @@ export default function Home() {
           setUserData({
             weight: data.weight || "",
             height: data.height || "",
+            age: data.age || "",
             bmiLastUpdated: data.bmiLastUpdated || null,
           });
 
@@ -111,7 +113,7 @@ export default function Home() {
         bmiLastUpdated: now,
       });
 
-      setUserData(prev => ({
+      setUserData((prev) => ({
         ...prev,
         weight: tempWeight,
         height: tempHeight,
@@ -176,12 +178,22 @@ export default function Home() {
     { id: "4", title: "Sinir", icon: "brain", route: "/examination-detail/nerve" },
   ];
 
-  const sportActivities: SportActivity[] = [
-    { id: "1", title: "Üst Bədən", icon: "arm-flex", route: "/sports-detail/upper-body" },
-    { id: "2", title: "Alt Bədən", icon: "run", route: "/sports-detail/lower-body" },
-    { id: "3", title: "Qarın", icon: "dumbbell", route: "/sports-detail/core" },
-    { id: "4", title: "Kardio", icon: "heart-pulse", route: "/sports-detail/cardio" },
-  ];
+  // Determine if user is a kid (under 15) based on age
+  const isKid = userData.age ? parseInt(userData.age) < 15 : false;
+
+  const sportActivities: SportActivity[] = isKid
+    ? [
+        { id: "1", title: "Isınma", icon: "human-handsup", route: "/sports-detail/kids-warmup" },
+        { id: "2", title: "Əyləncəli", icon: "emoticon-happy", route: "/sports-detail/kids-fun" },
+        { id: "3", title: "Tarazlıq", icon: "yoga", route: "/sports-detail/kids-balance" },
+        { id: "4", title: "Skolyoz", icon: "spine", route: "/sports-detail/kids-scoliosis" },
+      ]
+    : [
+        { id: "1", title: "Üst Bədən", icon: "arm-flex", route: "/sports-detail/adults-upper" },
+        { id: "2", title: "Alt Bədən", icon: "run", route: "/sports-detail/adults-lower" },
+        { id: "3", title: "Qarın", icon: "dumbbell", route: "/sports-detail/adults-core" },
+        { id: "4", title: "Skolyoz", icon: "spine", route: "/sports-detail/adults-scoliosis" },
+      ];
 
   const bmi = calculateBMI();
   const bmiStatus = bmi ? getBMIStatus(parseFloat(bmi)) : null;
