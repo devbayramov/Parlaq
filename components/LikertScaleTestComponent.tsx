@@ -28,6 +28,7 @@ export interface LikertScaleTest {
   maxRawScore: number;
   multiplier: number;
   reverseScoring?: boolean;
+  hideScore?: boolean;
   thresholds: {
     value: number;
     warningMessage: string;
@@ -102,9 +103,11 @@ export default function LikertScaleTestComponent({
             <Text style={isWarning ? styles.warningMessage : styles.successMessage}>
               {isWarning ? test.thresholds.warningMessage : test.thresholds.successMessage}
             </Text>
-            <Text style={styles.scoreSmall}>
-              Nəticə: {finalScore} / {test.maxRawScore * test.multiplier}
-            </Text>
+            {!test.hideScore && (
+              <Text style={styles.scoreSmall}>
+                Nəticə: {finalScore} / {test.maxRawScore * test.multiplier}
+              </Text>
+            )}
           </View>
 
           <View style={styles.resultButtonContainer}>

@@ -166,9 +166,10 @@ export default function Home() {
   };
 
   const quickTests: QuickTest[] = [
-    { id: "1", title: "Məntiq", icon: "brain", color: "#6C5CE7", route: "/tests/intelligence" },
-    { id: "3", title: "Şəxsiyyət", icon: "account-heart", color: "#E17055", route: "/tests/personality" },
-    { id: "4", title: "Emosional", icon: "heart", color: "#D63031", route: "/tests/emotional" },
+    { id: "1", title: t.mentalHealthTest, icon: "head-question", color: "#6C5CE7", route: "/tests/emotional-detail/srq20" },
+    { id: "2", title: t.alcoholTest, icon: "glass-wine", color: "#E17055", route: "/tests/emotional-detail/audit" },
+    { id: "3", title: t.wellbeingTest, icon: "emoticon-happy", color: "#27AE60", route: "/tests/emotional-detail/wellbeing" },
+    { id: "4", title: t.depressionTest, icon: "emoticon-sad", color: "#D63031", route: "/tests/emotional-detail/phqa" },
   ];
 
   const quickExams: QuickExam[] = [

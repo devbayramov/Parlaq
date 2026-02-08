@@ -81,6 +81,10 @@ interface Translations {
   emotional: string;
   game: string;
   art: string;
+  mentalHealthTest: string;
+  alcoholTest: string;
+  wellbeingTest: string;
+  depressionTest: string;
 
   // Examinations
   medicalExaminations: string;
@@ -213,6 +217,10 @@ const translations: Record<Language, Translations> = {
     emotional: "Emosional",
     game: "Oyun",
     art: "Sənət",
+    mentalHealthTest: "Psixi Sorğu",
+    alcoholTest: "Alkoqol Testi",
+    wellbeingTest: "Rifah Testi",
+    depressionTest: "Depressiya testi",
 
     // Examinations
     medicalExaminations: "Tibbi Yoxlanışlar",
@@ -341,6 +349,10 @@ const translations: Record<Language, Translations> = {
     emotional: "Emotional",
     game: "Game",
     art: "Art",
+    mentalHealthTest: "Mental Health Test",
+    alcoholTest: "Alcohol Test",
+    wellbeingTest: "Wellbeing Test",
+    depressionTest: "Depression Screening",
 
     // Examinations
     medicalExaminations: "Medical Examinations",
@@ -469,6 +481,10 @@ const translations: Record<Language, Translations> = {
     emotional: "Эмоциональный",
     game: "Игра",
     art: "Искусство",
+    mentalHealthTest: "Психическое здоровье",
+    alcoholTest: "Тест на алкоголь",
+    wellbeingTest: "Тест благополучия",
+    depressionTest: "Скрининг депрессии",
 
     // Examinations
     medicalExaminations: "Медицинские осмотры",

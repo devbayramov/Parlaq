@@ -1,79 +1,74 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, ScrollView, Text, View,StyleSheet,TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import TextInputField from "../../components/ui/TextInputField";
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
+import { auth, db } from "@/services/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 
 export default function Tests() {
-        const { language, setLanguage, t } = useLanguage();
-  
-    const router = useRouter();
+  const { t } = useLanguage();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [userAge, setUserAge] = useState<number>(0);
 
-  const testSections: Array<{
-    title: string;
-    boxes: Array<{ id: number; icon: string; title: string; route?:string; }>;
-  }> = [
+  useEffect(() => {
+    const fetchUserAge = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const age = parseInt(userDoc.data().age) || 0;
+          setUserAge(age);
+        }
+      }
+    };
+    fetchUserAge();
+  }, []);
 
-    {
-      title: t.iqTests,
-      boxes: [
-        { id: 1, icon: "brain", title: t.logic, route: "/tests/intelligence" },
-      ],
-    },
-    {
-      title: t.psychologyTests,
-      boxes: [
-        { id: 3, icon: "thought-bubble", title: t.personality, route: "/tests/personality" },
-        { id: 4, icon: "heart", title: t.emotional, route: "/tests/emotional" },
-      ],
-    },
+  const allTests: Array<{ id: number; icon: string; title: string; route: string; minAge?: number }> = [
+    { id: 1, icon: "head-question", title: t.mentalHealthTest, route: "/tests/emotional-detail/srq20" },
+    { id: 2, icon: "glass-wine", title: t.alcoholTest, route: "/tests/emotional-detail/audit", minAge: 18 },
+    { id: 3, icon: "emoticon-happy", title: t.wellbeingTest, route: "/tests/emotional-detail/wellbeing" },
+    { id: 4, icon: "emoticon-sad", title: t.depressionTest, route: "/tests/emotional-detail/phqa" },
   ];
+
+  const tests = allTests.filter((test) => !test.minAge || userAge >= test.minAge);
+
+  const filteredTests = tests.filter((test) =>
+    test.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
    <View style={styles.container}>
 
   <View style={styles.header}>
-        <TextInputField placeholder={t.searchTest} style={styles.headerInput}   value={searchQuery}
- onChangeText={(text) => setSearchQuery(text)} /> 
+        <TextInputField placeholder={t.searchTest} style={styles.headerInput} value={searchQuery}
+ onChangeText={(text) => setSearchQuery(text)} />
   </View>
 
 <ScrollView contentContainerStyle={styles.scrollContent}>
- {testSections.map((section) => {
-  const filteredBoxes = section.boxes.filter((box) =>
-    box.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  <Text style={styles.sectionTitle}>{t.testTab}</Text>
 
-  if (filteredBoxes.length === 0) return null;
-
-  return (
-    <View key={section.title}>
-      <Text style={styles.sectionTitle}>{section.title}</Text>
-
-      <View style={styles.grid}>
-        {filteredBoxes.map((box) => (
-          <TouchableOpacity
-            key={box.id}
-            style={styles.examinationBox}
-            onPress={() => box.route && router.push(box.route as any)}
-          >
-            <MaterialCommunityIcons
-              name={box.icon as any}
-              size={50}
-              color="#A3C9A8"
-            />
-            <View style={styles.divider} />
-            <Text style={styles.examinationTitle}>{box.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-})}
-
+  <View style={styles.grid}>
+    {filteredTests.map((test) => (
+      <TouchableOpacity
+        key={test.id}
+        style={styles.examinationBox}
+        onPress={() => router.push(test.route as any)}
+      >
+        <MaterialCommunityIcons
+          name={test.icon as any}
+          size={50}
+          color="#A3C9A8"
+        />
+        <View style={styles.divider} />
+        <Text style={styles.examinationTitle}>{test.title}</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
 </ScrollView>
 
     </View>
