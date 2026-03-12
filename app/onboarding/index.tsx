@@ -1,10 +1,62 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import type { FlatList as FlatListType } from "react-native";
-import { Dimensions, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, Text, TouchableOpacity, View } from "react-native";
 
 const ONBOARDING_COMPLETE_KEY = "onboarding_complete";
+
+const ExerciseIllustration = () => (
+  <View style={{ width: 260, height: 280, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ width: 210, height: 210, borderRadius: 105, backgroundColor: "#073D3D", opacity: 0.1, position: "absolute" }} />
+    <View style={{ width: 160, height: 160, borderRadius: 80, backgroundColor: "#073D3D", opacity: 0.08, position: "absolute" }} />
+    <MaterialCommunityIcons name="run-fast" size={110} color="#073D3D" />
+    <View style={{ position: "absolute", top: 18, right: 22, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="heart-pulse" size={28} color="#C0392B" />
+    </View>
+    <View style={{ position: "absolute", bottom: 22, left: 18, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="dumbbell" size={28} color="#073D3D" />
+    </View>
+    <View style={{ position: "absolute", bottom: 28, right: 16, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="timer-outline" size={26} color="#2A7F7F" />
+    </View>
+  </View>
+);
+
+const MedicalIllustration = () => (
+  <View style={{ width: 260, height: 280, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ width: 210, height: 210, borderRadius: 105, backgroundColor: "#073D3D", opacity: 0.1, position: "absolute" }} />
+    <View style={{ width: 160, height: 160, borderRadius: 80, backgroundColor: "#073D3D", opacity: 0.08, position: "absolute" }} />
+    <MaterialCommunityIcons name="stethoscope" size={110} color="#073D3D" />
+    <View style={{ position: "absolute", top: 18, left: 22, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="clipboard-pulse-outline" size={28} color="#073D3D" />
+    </View>
+    <View style={{ position: "absolute", top: 20, right: 20, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="needle" size={26} color="#2A7F7F" />
+    </View>
+    <View style={{ position: "absolute", bottom: 24, right: 18, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="pill" size={26} color="#C0392B" />
+    </View>
+  </View>
+);
+
+const IQIllustration = () => (
+  <View style={{ width: 260, height: 280, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ width: 210, height: 210, borderRadius: 105, backgroundColor: "#073D3D", opacity: 0.1, position: "absolute" }} />
+    <View style={{ width: 160, height: 160, borderRadius: 80, backgroundColor: "#073D3D", opacity: 0.08, position: "absolute" }} />
+    <MaterialCommunityIcons name="head-cog-outline" size={110} color="#073D3D" />
+    <View style={{ position: "absolute", top: 18, right: 22, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="lightbulb-on-outline" size={28} color="#E67E22" />
+    </View>
+    <View style={{ position: "absolute", bottom: 22, left: 18, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="puzzle-outline" size={28} color="#2A7F7F" />
+    </View>
+    <View style={{ position: "absolute", bottom: 28, right: 16, backgroundColor: "#fff", borderRadius: 24, padding: 8, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
+      <MaterialCommunityIcons name="chart-line" size={26} color="#073D3D" />
+    </View>
+  </View>
+);
 
 export default function Index() {
     const [index, setIndex] = useState(0);
@@ -13,19 +65,19 @@ export default function Index() {
 
     const slides = [
         {
-          image: require('../../assets/images/kangaroo1.png'),
+          illustration: <ExerciseIllustration />,
           title: "İdman Hərəkətləri",
           desc: "Sağlam əzələ və kemiklər üçün hər gün sadə idman hərəkətləri edin. Əriyən, çevirmə və uzunlaşdırma hərəkətləri sizi güclü və sağlam saxlayır.",
         },
         {
-          image: require('../../assets/images/kangaroo2.png'),
+          illustration: <MedicalIllustration />,
           title: "Tibbi Yoxlanışlar",
-          desc: "Mütəşəkkil tibbi yoxlanışlar uşağın sağlığını qoruyur. Boy, çəki və digər əhəmiyyətli göstəriciləri izləyin və həkim məsləhətlərini dinləyin.",
+          desc: "Mütəşəkkil tibbi yoxlanışlar fərdin sağlığını qoruyur. Boy, çəki və digər əhəmiyyətli göstəriciləri izləyin və həkim məsləhətlərini dinləyin.",
         },
         {
-          image: require('../../assets/images/kangaroo3.png'),
+          illustration: <IQIllustration />,
           title: "Testlər və IQ",
-          desc: "Zəka testləri və digər psikoloji testlər uşağın intellektual inkişafını ölçür. Düşüncə, yaddaş və yaradıcılığı inkişaf etdirmək üçün məşqlər edin.",
+          desc: "Zəka testləri və digər psikoloji testlər fərdin intellektual inkişafını ölçür. Düşüncə, yaddaş və yaradıcılığı inkişaf etdirmək üçün məşqlər edin.",
         },
       ];
 
@@ -83,12 +135,10 @@ export default function Index() {
                   {item.title}
                 </Text>
 
-                {/* Şəkil */}
-                <Image
-                  source={item.image}
-                  style={{ width: 260, height: 300, marginBottom: 28 }}
-                  resizeMode="contain"
-                />
+                {/* İllüstrasiya */}
+                <View style={{ marginBottom: 28 }}>
+                  {item.illustration}
+                </View>
 
                 {/* Mətn */}
                 <View style={{ width: "85%", alignItems: "center" }}>
