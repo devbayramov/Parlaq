@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import TextInputField from "../../components/ui/TextInputField";
@@ -13,18 +13,26 @@ export default function Tests() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [userAge, setUserAge] = useState<number>(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchUserAge = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const age = parseInt(userDoc.data().age) || 0;
+        setUserAge(age);
+      }
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserAge();
+    setRefreshing(false);
+  };
 
   useEffect(() => {
-    const fetchUserAge = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const age = parseInt(userDoc.data().age) || 0;
-          setUserAge(age);
-        }
-      }
-    };
     fetchUserAge();
   }, []);
 
@@ -49,7 +57,12 @@ export default function Tests() {
  onChangeText={(text) => setSearchQuery(text)} />
   </View>
 
-<ScrollView contentContainerStyle={styles.scrollContent}>
+<ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
   <Text style={styles.sectionTitle}>{t.testTab}</Text>
 
   <View style={styles.grid}>

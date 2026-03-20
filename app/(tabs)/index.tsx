@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -59,26 +60,34 @@ export default function Home() {
   const [tempWeight, setTempWeight] = useState("");
   const [tempHeight, setTempHeight] = useState("");
   const [showBmiAlert, setShowBmiAlert] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchUserData = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        setUserData({
+          weight: data.weight || "",
+          height: data.height || "",
+          age: data.age || "",
+          bmiLastUpdated: data.bmiLastUpdated || null,
+        });
+
+        // Check if we need to show BMI modal
+        checkBmiModalNeed(data);
+      }
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    setRefreshing(false);
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setUserData({
-            weight: data.weight || "",
-            height: data.height || "",
-            age: data.age || "",
-            bmiLastUpdated: data.bmiLastUpdated || null,
-          });
-
-          // Check if we need to show BMI modal
-          checkBmiModalNeed(data);
-        }
-      }
-    };
     fetchUserData();
   }, []);
 
@@ -165,12 +174,14 @@ export default function Home() {
     return Math.max(0, Math.ceil(diff / (24 * 60 * 60 * 1000)));
   };
 
-  const quickTests: QuickTest[] = [
+  const userAge = parseInt(userData.age) || 0;
+  const allQuickTests: (QuickTest & { minAge?: number })[] = [
     { id: "1", title: t.mentalHealthTest, icon: "head-question", color: "#6C5CE7", route: "/tests/emotional-detail/srq20" },
-    { id: "2", title: t.alcoholTest, icon: "glass-wine", color: "#E17055", route: "/tests/emotional-detail/audit" },
+    { id: "2", title: t.alcoholTest, icon: "glass-wine", color: "#E17055", route: "/tests/emotional-detail/audit", minAge: 18 },
     { id: "3", title: t.wellbeingTest, icon: "emoticon-happy", color: "#27AE60", route: "/tests/emotional-detail/wellbeing" },
     { id: "4", title: t.depressionTest, icon: "emoticon-sad", color: "#D63031", route: "/tests/emotional-detail/phqa" },
   ];
+  const quickTests: QuickTest[] = allQuickTests.filter((t) => !t.minAge || userAge >= t.minAge);
 
   const quickExams: QuickExam[] = [
     { id: "1", title: "Göz", icon: "eye", route: "/examination-detail/eye" },
@@ -210,7 +221,18 @@ export default function Home() {
 
   return (
     <>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#073D3D"
+            colors={["#073D3D"]}
+          />
+        }
+      >
         {/* BMI Alert Banner */}
         {showBmiAlert && (
           <TouchableOpacity
