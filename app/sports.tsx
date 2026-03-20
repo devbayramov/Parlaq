@@ -2,6 +2,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { auth, db } from "@/services/firebaseConfig";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
@@ -123,31 +124,31 @@ export default function Sports() {
   ];
 
   useEffect(() => {
-    fetchUserAge();
-  }, []);
-
-  const fetchUserAge = async () => {
-    try {
-      const user = auth.currentUser;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          if (userData.age && userData.age !== "") {
-            setUserAge(parseInt(userData.age));
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            const age = parseInt(data.age);
+            if (!isNaN(age) && age > 0) {
+              setUserAge(age);
+            } else {
+              setShowAgeModal(true);
+            }
           } else {
             setShowAgeModal(true);
           }
-        } else {
-          setShowAgeModal(true);
+        } catch (error) {
+          console.error("Error fetching user age:", error);
         }
+      } else {
+        setShowAgeModal(true);
       }
-    } catch (error) {
-      console.error("Error fetching user age:", error);
-    } finally {
       setLoading(false);
-    }
-  };
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleSaveAge = async () => {
     const age = parseInt(ageInput);
