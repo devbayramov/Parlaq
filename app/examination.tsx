@@ -40,6 +40,12 @@ export default function Examination() {
       icon: "brain",
       route: "/examination-detail/nerve",
     },
+    {
+      id: "5",
+      title: t.dentalExam,
+      icon: "tooth",
+      route: "/examination-detail/dental",
+    },
   ];
 
   return (

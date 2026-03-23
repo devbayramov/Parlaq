@@ -92,6 +92,7 @@ interface Translations {
   scoliosis: string;
   footExam: string;
   nerveExam: string;
+  dentalExam: string;
 
   // Sports
   sportsExercises: string;
@@ -278,6 +279,7 @@ const translations: Record<Language, Translations> = {
     scoliosis: "Skolyoz",
     footExam: "Ayaq düzlüyü",
     nerveExam: "Sinir yoxlanışı",
+    dentalExam: "Diş yoxlanışı",
 
     // Sports
     sportsExercises: "İdman Hərəkətləri",
@@ -460,6 +462,7 @@ const translations: Record<Language, Translations> = {
     scoliosis: "Scoliosis",
     footExam: "Foot Alignment",
     nerveExam: "Nerve Examination",
+    dentalExam: "Dental Examination",
 
     // Sports
     sportsExercises: "Sport Exercises",
@@ -642,6 +645,7 @@ const translations: Record<Language, Translations> = {
     scoliosis: "Сколиоз",
     footExam: "Плоскостопие",
     nerveExam: "Неврологический осмотр",
+    dentalExam: "Стоматологический осмотр",
 
     // Sports
     sportsExercises: "Спортивные упражнения",
