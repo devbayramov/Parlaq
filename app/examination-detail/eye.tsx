@@ -3,130 +3,169 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-// ─── Snellen cədvəlinə əsaslanan görmə kəskinliyi testi ─────────────────────
-const acuitySteps = [
-  { id: "a1", acuity: "20/200", fontSize: 64, letter: "E", options: ["E", "F", "B", "P"], correct: "E" },
-  { id: "a2", acuity: "20/100", fontSize: 52, letter: "F", options: ["P", "F", "E", "R"], correct: "F" },
-  { id: "a3", acuity: "20/70",  fontSize: 42, letter: "D", options: ["D", "O", "Q", "B"], correct: "D" },
-  { id: "a4", acuity: "20/50",  fontSize: 34, letter: "N", options: ["N", "M", "H", "K"], correct: "N" },
-  { id: "a5", acuity: "20/40",  fontSize: 26, letter: "R", options: ["R", "P", "B", "K"], correct: "R" },
-  { id: "a6", acuity: "20/30",  fontSize: 20, letter: "Z", options: ["Z", "S", "N", "X"], correct: "Z" },
-  { id: "a7", acuity: "20/25",  fontSize: 16, letter: "T", options: ["T", "I", "L", "J"], correct: "T" },
-  { id: "a8", acuity: "20/20",  fontSize: 13, letter: "A", options: ["A", "H", "N", "V"], correct: "A" },
+// ─── Suallar və əmsallar ──────────────────────────────────────────────────────
+const questions = [
+  {
+    id: 1,
+    text: "Gün ərzində gözlərinizdə tez-tez yanma, qum varmış kimi batma və ya səbəbsiz yaşarma olurmu?",
+    weight: 1,
+  },
+  {
+    id: 2,
+    text: "Qaranlıq və ya zəif işıqlı otağa daxil olduqda gözlərinizin alışması çox uzun çəkirmi və ya qaranlıqda hərəkət etmək sizin üçün həddindən artıq çətindirmi?",
+    weight: 1.5,
+  },
+  {
+    id: 3,
+    text: "Hər hansı bir gözünüzlə (ayrı-ayrı yoxladıqda) uzaqdakı əşyaları görməkdə çətinlik çəkirsinizmi?",
+    weight: 2,
+  },
+  {
+    id: 4,
+    text: "Gözünüzdə kəskin və ya xroniki (davamlı) ağrı, sancı və ya diskomfort hiss edirsinizmi?",
+    weight: 2.5,
+  },
+  {
+    id: 5,
+    text: "Kitab oxumaq, tikiş tikmək və ya telefon ekranına baxmaq kimi yaxın məsafəli işləri görməkdə çətinlik çəkirsinizmi?",
+    weight: 1.5,
+  },
+  {
+    id: 6,
+    text: "Gözünüzdə bir neçə gündən artıq davam edən və ya ağrı ilə müşayiət olunan qızartı varmı?",
+    weight: 1,
+  },
+  {
+    id: 7,
+    text: "Baxdığınız əşyalar sanki dumanın və ya suyun arxasındaymış kimi bulanıq görünürmü?",
+    weight: 2,
+  },
+  {
+    id: 8,
+    text: "Görmə sahənizin kənarlarında qaralma hiss edirsinizmi və ya düz qarşıya baxanda yanları görməkdə çətinlik çəkirsinizmi?",
+    weight: 2.5,
+  },
+  {
+    id: 9,
+    text: "Parlaq işığa baxanda gözlərinizdə ağrı olurmu və ya gözlərinizi qeyri-ixtiyari yummaq ehtiyacı duyursunuzmu?",
+    weight: 1.5,
+  },
+  {
+    id: 10,
+    text: "Gözünüzdən irinli, yapışqan və ya həddindən artıq sulu ifrazat gəlirmi?",
+    weight: 1.5,
+  },
 ];
 
-// ─── Rəng görməsi testi ───────────────────────────────────────────────────────
-const colorSteps = [
-  {
-    id: "c1",
-    question: "Göründüyü rəngi seçin",
+const answerOptions = [
+  { value: 0, label: "Heç vaxt" },
+  { value: 1, label: "Çox nadir hallarda" },
+  { value: 2, label: "Bəzən (ayda bir neçə dəfə)" },
+  { value: 3, label: "Tez-tez (həftədə bir neçə dəfə)" },
+  { value: 4, label: "Həmişə / Daimi / Şiddətli" },
+];
+
+// ─── Nəticə məlumatları ───────────────────────────────────────────────────────
+function getResult(score: number, redFlag: boolean) {
+  if (redFlag) {
+    return {
+      color: "#C0392B",
+      emoji: "🔴",
+      title: "TƏCİLİ DİQQƏT",
+      subtitle: "Qırmızı Bayraq aşkar olundu",
+      description:
+        "Sizin cavablarınızda \"Qırmızı Bayraq\" (təcili əlamət) aşkar olundu. Kəskin ağrı və görmə sahəsinin daralması göz daxili təzyiqin kəskin artması və ya torlu qişanın qopması əlaməti ola bilər. Təcili həkim müayinəsi tələb olunur!",
+      bg: "#FADBD8",
+      border: "#C0392B",
+    };
+  }
+  if (score <= 15) {
+    return {
+      color: "#27AE60",
+      emoji: "🟢",
+      title: "Sağlam / Normal",
+      subtitle: `Ümumi bal: ${score.toFixed(1)}`,
+      description:
+        "Gözlərinizin vəziyyəti ÜST standartlarına görə tam stabildir. Hazırda ciddi bir risk görünmür. Hiss etdiyiniz xırda diskomfortlar yorğunluq və ya ekrana çox baxmaqla bağlı ola bilər. İldə 1 dəfə rutin müayinə yetərlidir.",
+      bg: "#D5F5E3",
+      border: "#27AE60",
+    };
+  }
+  if (score <= 30) {
+    return {
+      color: "#D4AC0D",
+      emoji: "🟡",
+      title: "Diqqət tələb edən / Funksional Pozuntu",
+      subtitle: `Ümumi bal: ${score.toFixed(1)}`,
+      description:
+        "Görmə kəskinliyinizdə və ya göz səthində müəyyən problemlər var. Bu ballar adətən eynək ehtiyacı (miopiya, yaxını görmə) və ya xroniki göz quruluğunu göstərir. Gözləriniz daimi gərginlikdədir. Yaxın 1 ay ərzində oftalmoloqdan eynək təyini və ya müalicəvi damcılar üçün məsləhət alın.",
+      bg: "#FEF9E7",
+      border: "#D4AC0D",
+    };
+  }
+  if (score <= 48) {
+    return {
+      color: "#E67E22",
+      emoji: "🟠",
+      title: "Yüksək Risk / Patoloji Proses",
+      subtitle: `Ümumi bal: ${score.toFixed(1)}`,
+      description:
+        "Gözlərinizdə ciddi patoloji dəyişikliklərin başlama ehtimalı yüksəkdir. Bu bal katarakta, başlanğıc qlaukoma və ya torlu qişa problemlərinə işarə edir. Görmə qabiliyyətiniz təhlükədədir. Gecikmədən (1 həftə ərzində) tam cihazlı müayinədən (göz dibi, göz təzyiqi ölçümü) keçməyiniz mütləqdir.",
+      bg: "#FDEBD0",
+      border: "#E67E22",
+    };
+  }
+  return {
     color: "#C0392B",
-    textColor: "#fff",
-    sampleText: "QIRMIZI",
-    options: ["Qırmızı", "Yaşıl", "Narıncı", "Bənövşəyi"],
-    correct: "Qırmızı",
-  },
-  {
-    id: "c2",
-    question: "Göründüyü rəngi seçin",
-    color: "#27AE60",
-    textColor: "#fff",
-    sampleText: "YAŞIL",
-    options: ["Mavi", "Yaşıl", "Sarı", "Qara"],
-    correct: "Yaşıl",
-  },
-  {
-    id: "c3",
-    question: "Göründüyü rəngi seçin",
-    color: "#2471A3",
-    textColor: "#fff",
-    sampleText: "MAVİ",
-    options: ["Bənövşəyi", "Qırmızı", "Mavi", "Boz"],
-    correct: "Mavi",
-  },
-];
-
-// ─── Kontrast həssaslıq testi ────────────────────────────────────────────────
-const contrastSteps = [
-  {
-    id: "k1",
-    question: "Mətnin içindəki hərfi oxuyun",
-    bg: "#BBBBBB",
-    textColor: "#999999",
-    letter: "G",
-    options: ["C", "G", "Q", "O"],
-    correct: "G",
-  },
-  {
-    id: "k2",
-    question: "Mətnin içindəki hərfi oxuyun",
-    bg: "#D8D8D8",
-    textColor: "#BBBBBB",
-    letter: "K",
-    options: ["K", "H", "X", "F"],
-    correct: "K",
-  },
-];
-
-// ─── Növbəti sualın mərhələsini müəyyənləşdir ────────────────────────────────
-type Phase = "acuity" | "color" | "contrast" | "result";
-
-const totalQuestions = acuitySteps.length + colorSteps.length + contrastSteps.length;
-
-function getPhaseAndIndex(globalIdx: number): { phase: Phase; localIdx: number } {
-  if (globalIdx < acuitySteps.length)
-    return { phase: "acuity", localIdx: globalIdx };
-  if (globalIdx < acuitySteps.length + colorSteps.length)
-    return { phase: "color", localIdx: globalIdx - acuitySteps.length };
-  if (globalIdx < totalQuestions)
-    return { phase: "contrast", localIdx: globalIdx - acuitySteps.length - colorSteps.length };
-  return { phase: "result", localIdx: 0 };
-}
-
-function getAcuityLabel(correctAcuity: number): { label: string; color: string; note: string } {
-  if (correctAcuity === 8) return { label: "20/20 — Mükəmməl", color: "#27AE60", note: "Görməniz normaldır." };
-  if (correctAcuity === 7) return { label: "20/25 — Yaxşı", color: "#2ECC71", note: "Görməniz demək olar ki, normaldır." };
-  if (correctAcuity >= 5) return { label: "20/40 — Orta", color: "#F39C12", note: "Yüngül görmə zəifliyi ola bilər. Müayinə tövsiyə olunur." };
-  if (correctAcuity >= 3) return { label: "20/70 — Zəif", color: "#E67E22", note: "Görmə zəifliyi var. Mütəxəssisə müraciət edin." };
-  return { label: "20/200 — Çox zəif", color: "#C0392B", note: "Mütləq həkimə müraciət edin." };
+    emoji: "🔴",
+    title: "Kritik / Təcili Müdaxilə",
+    subtitle: `Ümumi bal: ${score.toFixed(1)}`,
+    description:
+      "Görmənin tamamilə və ya qalıcı itirilməsi riski! ÜST bu səviyyəni \"Təcili Tibbi Yardım\" tələb edən vəziyyət kimi qiymətləndirir. Göz sinirləriniz və ya torlu qişanız ciddi zədələnmiş ola bilər. Vaxt itirmədən ən yaxın oftalmoloji klinikaya müraciət edin.",
+    bg: "#FADBD8",
+    border: "#C0392B",
+  };
 }
 
 export default function EyeExamination() {
   const router = useRouter();
-  const [currentGlobal, setCurrentGlobal] = useState(0);
-  const [answers, setAnswers] = useState<{ [id: string]: boolean }>({});
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
 
-  const { phase, localIdx } = getPhaseAndIndex(currentGlobal);
-  const isResult = phase === "result";
+  const isLast = current === questions.length - 1;
 
-  const acuityCorrect = acuitySteps.filter((s) => answers[s.id] === true).length;
-  const colorCorrect  = colorSteps.filter((s)  => answers[s.id] === true).length;
-  const contrastCorrect = contrastSteps.filter((s) => answers[s.id] === true).length;
-  const acuityInfo = getAcuityLabel(acuityCorrect);
+  const handleSelect = (value: number) => {
+    setSelected(value);
+  };
 
-  const handleAnswer = (text: string, correct: boolean, id: string) => {
-    if (showFeedback) return;
-    setSelectedAnswer(text);
-    setShowFeedback(true);
-    setAnswers((prev) => ({ ...prev, [id]: correct }));
-    setTimeout(() => {
-      setShowFeedback(false);
-      setSelectedAnswer(null);
-      setCurrentGlobal((i) => i + 1);
-    }, 600);
+  const handleNext = () => {
+    if (selected === null) return;
+    const newAnswers = [...answers, selected];
+    setAnswers(newAnswers);
+    setSelected(null);
+
+    if (isLast) {
+      setShowResult(true);
+    } else {
+      setCurrent((c) => c + 1);
+    }
   };
 
   const reset = () => {
-    setCurrentGlobal(0);
-    setAnswers({});
-    setSelectedAnswer(null);
-    setShowFeedback(false);
+    setCurrent(0);
+    setAnswers([]);
+    setSelected(null);
+    setShowResult(false);
   };
 
-  // ─── Nəticə ekranı ──────────────────────────────────────────────────────
-  if (isResult) {
+  // ─── Nəticə hesablaması ───────────────────────────────────────────────────
+  if (showResult) {
+    const totalScore = answers.reduce((sum, ans, idx) => sum + ans * questions[idx].weight, 0);
+    const redFlag = answers[3] >= 3 || answers[7] >= 3; // Q4 (idx=3) or Q8 (idx=7)
+    const result = getResult(totalScore, redFlag);
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -137,42 +176,59 @@ export default function EyeExamination() {
           <View style={{ width: 28 }} />
         </View>
         <ScrollView contentContainerStyle={styles.resultScroll}>
-          <MaterialCommunityIcons name="eye-check-outline" size={72} color="#A3C9A8" style={{ alignSelf: "center", marginBottom: 16 }} />
-          <Text style={styles.resultHeading}>Nəticələr</Text>
+          <MaterialCommunityIcons
+            name="eye-check-outline"
+            size={72}
+            color="#A3C9A8"
+            style={{ alignSelf: "center", marginBottom: 16 }}
+          />
+          <Text style={styles.resultHeading}>Nəticə</Text>
 
-          {/* Görmə kəskinliyi */}
-          <View style={styles.resultCard}>
-            <Text style={styles.resultCardTitle}>Görmə kəskinliyi</Text>
-            <Text style={[styles.resultAcuity, { color: acuityInfo.color }]}>{acuityInfo.label}</Text>
-            <Text style={styles.resultNote}>{acuityInfo.note}</Text>
-            <View style={styles.resultRow}>
-              <Text style={styles.resultSub}>Düzgün: {acuityCorrect} / {acuitySteps.length}</Text>
-            </View>
+          {/* Əsas nəticə kartı */}
+          <View style={[styles.resultCard, { backgroundColor: result.bg, borderColor: result.border }]}>
+            <Text style={styles.resultEmoji}>{result.emoji}</Text>
+            <Text style={[styles.resultTitle, { color: result.color }]}>{result.title}</Text>
+            <Text style={[styles.resultSubtitle, { color: result.color }]}>{result.subtitle}</Text>
+            <Text style={styles.resultDesc}>{result.description}</Text>
           </View>
 
-          {/* Rəng görməsi */}
-          <View style={styles.resultCard}>
-            <Text style={styles.resultCardTitle}>Rəng görməsi</Text>
-            <View style={styles.resultRow}>
-              {colorSteps.map((s) => (
-                <View key={s.id} style={[styles.colorDot, { backgroundColor: s.color, borderColor: answers[s.id] ? "#27AE60" : "#C0392B" }]}>
-                  <MaterialCommunityIcons name={answers[s.id] ? "check" : "close"} size={14} color="#fff" />
+          {/* Bal cədvəli */}
+          <View style={styles.scaleCard}>
+            <Text style={styles.scaleTitle}>Bal miqyası</Text>
+            {[
+              { range: "0 – 15", label: "Sağlam / Normal", color: "#27AE60" },
+              { range: "16 – 30", label: "Diqqət tələb edən", color: "#D4AC0D" },
+              { range: "31 – 48", label: "Yüksək Risk", color: "#E67E22" },
+              { range: "49 – 68", label: "Kritik / Təcili", color: "#C0392B" },
+            ].map((item) => (
+              <View key={item.range} style={styles.scaleRow}>
+                <View style={[styles.scaleDot, { backgroundColor: item.color }]} />
+                <Text style={styles.scaleRange}>{item.range}</Text>
+                <Text style={styles.scaleLabel}>{item.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Cavabların icmalı */}
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryTitle}>Cavablarınızın icmalı</Text>
+            {questions.map((q, idx) => {
+              const ans = answers[idx];
+              const weighted = ans * q.weight;
+              return (
+                <View key={q.id} style={styles.summaryRow}>
+                  <Text style={styles.summaryQ}>S{q.id}:</Text>
+                  <Text style={styles.summaryAns}>{answerOptions[ans]?.label ?? "-"}</Text>
+                  <Text style={styles.summaryScore}>+{weighted % 1 === 0 ? weighted : weighted.toFixed(1)}</Text>
                 </View>
-              ))}
+              );
+            })}
+            <View style={styles.summaryTotal}>
+              <Text style={styles.summaryTotalLabel}>Ümumi bal:</Text>
+              <Text style={[styles.summaryTotalValue, { color: result.color }]}>
+                {totalScore % 1 === 0 ? totalScore : totalScore.toFixed(1)}
+              </Text>
             </View>
-            <Text style={styles.resultSub}>Düzgün: {colorCorrect} / {colorSteps.length}</Text>
-            {colorCorrect < colorSteps.length && (
-              <Text style={styles.resultNote}>Rəng görmə çatışmazlığı ola bilər. Həkim müayinəsi tövsiyə olunur.</Text>
-            )}
-          </View>
-
-          {/* Kontrast həssaslığı */}
-          <View style={styles.resultCard}>
-            <Text style={styles.resultCardTitle}>Kontrast həssaslığı</Text>
-            <Text style={styles.resultSub}>Düzgün: {contrastCorrect} / {contrastSteps.length}</Text>
-            {contrastCorrect < contrastSteps.length && (
-              <Text style={styles.resultNote}>Kontrast həssaslığınız azalmış ola bilər.</Text>
-            )}
           </View>
 
           <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
@@ -190,37 +246,12 @@ export default function EyeExamination() {
     );
   }
 
-  // ─── Sual ekranı ─────────────────────────────────────────────────────────
-  let currentStep: any;
-  let questionText = "";
-  let optionsList: string[] = [];
-  let correctAnswer = "";
-
-  if (phase === "acuity") {
-    currentStep = acuitySteps[localIdx];
-    questionText = "Hansı hərfi görürsünüz?";
-    optionsList = currentStep.options;
-    correctAnswer = currentStep.correct;
-  } else if (phase === "color") {
-    currentStep = colorSteps[localIdx];
-    questionText = currentStep.question;
-    optionsList = currentStep.options;
-    correctAnswer = currentStep.correct;
-  } else {
-    currentStep = contrastSteps[localIdx];
-    questionText = currentStep.question;
-    optionsList = currentStep.options;
-    correctAnswer = currentStep.correct;
-  }
-
-  const phaseLabel =
-    phase === "acuity" ? `Görmə kəskinliyi · Sıra ${localIdx + 1}/${acuitySteps.length}` :
-    phase === "color"  ? `Rəng görməsi · Sual ${localIdx + 1}/${colorSteps.length}` :
-                         `Kontrast həssaslığı · Sual ${localIdx + 1}/${contrastSteps.length}`;
+  // ─── Sual ekranı ──────────────────────────────────────────────────────────
+  const q = questions[current];
+  const progress = (current + 1) / questions.length;
 
   return (
     <View style={styles.container}>
-      {/* Başlıq */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#333" />
@@ -232,66 +263,62 @@ export default function EyeExamination() {
       {/* İrəliləyiş */}
       <View style={styles.progressWrap}>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${((currentGlobal + 1) / totalQuestions) * 100}%` }]} />
+          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
         </View>
-        <Text style={styles.progressLabel}>{phaseLabel}</Text>
+        <Text style={styles.progressLabel}>Sual {current + 1} / {questions.length}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Snellen kartı — görmə kəskinliyi */}
-        {phase === "acuity" && (
-          <View style={styles.snellenCard}>
-            <View style={styles.snellenAcuityBadge}>
-              <Text style={styles.snellenAcuityText}>{currentStep.acuity}</Text>
-            </View>
-            <Text style={[styles.snellenLetter, { fontSize: currentStep.fontSize }]}>
-              {currentStep.letter}
-            </Text>
+        {/* Sual kartı */}
+        <View style={styles.questionCard}>
+          <View style={styles.questionBadge}>
+            <Text style={styles.questionBadgeText}>Sual {q.id}</Text>
           </View>
-        )}
+          <Text style={styles.questionText}>{q.text}</Text>
+          <Text style={styles.weightLabel}>Əmsal: {q.weight}</Text>
+        </View>
 
-        {/* Rəng kartı */}
-        {phase === "color" && (
-          <View style={[styles.colorCard, { backgroundColor: currentStep.color }]}>
-            <Text style={[styles.colorCardText, { color: currentStep.textColor }]}>
-              {currentStep.sampleText}
-            </Text>
-          </View>
-        )}
-
-        {/* Kontrast kartı */}
-        {phase === "contrast" && (
-          <View style={[styles.contrastCard, { backgroundColor: currentStep.bg }]}>
-            <Text style={[styles.contrastLetter, { color: currentStep.textColor }]}>
-              {currentStep.letter}
-            </Text>
-          </View>
-        )}
-
-        {/* Sual */}
-        <Text style={styles.question}>{questionText}</Text>
-
-        {/* Cavab düymələri */}
+        {/* Cavab seçimləri */}
         <View style={styles.optionsWrap}>
-          {optionsList.map((opt) => {
-            let bg = "rgba(255,255,255,0.85)";
-            let borderColor = "transparent";
-            if (showFeedback && selectedAnswer === opt) {
-              bg = opt === correctAnswer ? "#D5F5E3" : "#FADBD8";
-              borderColor = opt === correctAnswer ? "#27AE60" : "#C0392B";
-            }
+          {answerOptions.map((opt) => {
+            const isSelected = selected === opt.value;
             return (
               <TouchableOpacity
-                key={opt}
-                style={[styles.optionBtn, { backgroundColor: bg, borderColor, borderWidth: 2 }]}
-                onPress={() => handleAnswer(opt, opt === correctAnswer, currentStep.id)}
+                key={opt.value}
+                style={[
+                  styles.optionBtn,
+                  isSelected && styles.optionBtnSelected,
+                ]}
+                onPress={() => handleSelect(opt.value)}
                 activeOpacity={0.75}
               >
-                <Text style={styles.optionText}>{opt}</Text>
+                <View style={[styles.optionDot, isSelected && styles.optionDotSelected]}>
+                  {isSelected && <View style={styles.optionDotInner} />}
+                </View>
+                <View style={styles.optionTextWrap}>
+                  <Text style={styles.optionScore}>{opt.value} bal</Text>
+                  <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
+                    {opt.label}
+                  </Text>
+                </View>
               </TouchableOpacity>
             );
           })}
         </View>
+
+        {/* İrəli düyməsi */}
+        <TouchableOpacity
+          style={[styles.nextBtn, selected === null && styles.nextBtnDisabled]}
+          onPress={handleNext}
+          disabled={selected === null}
+        >
+          <Text style={styles.nextBtnText}>{isLast ? "Nəticəyə bax" : "Növbəti sual"}</Text>
+          <MaterialCommunityIcons
+            name={isLast ? "check-circle-outline" : "arrow-right"}
+            size={20}
+            color="#fff"
+          />
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -315,109 +342,123 @@ const styles = StyleSheet.create({
   progressFill: { height: "100%", backgroundColor: "#A3C9A8" },
   progressLabel: { fontSize: 12, color: "#444", marginTop: 6, textAlign: "center" },
 
-  scroll: { paddingHorizontal: 16, paddingBottom: 24, alignItems: "center" },
+  scroll: { paddingHorizontal: 16, paddingBottom: 32 },
 
-  // Snellen
-  snellenCard: {
-    width: "100%",
-    backgroundColor: "#FFFEF5",
+  questionCard: {
+    backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 16,
-    paddingVertical: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
+    padding: 20,
+    marginBottom: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.07,
     shadowRadius: 8,
-    elevation: 4,
-    minHeight: 180,
+    elevation: 3,
   },
-  snellenAcuityBadge: {
-    position: "absolute",
-    top: 12,
-    right: 12,
+  questionBadge: {
+    alignSelf: "flex-start",
     backgroundColor: "#073D3D",
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
+    marginBottom: 12,
   },
-  snellenAcuityText: { color: "#fff", fontSize: 11, fontWeight: "700" },
-  snellenLetter: {
-    fontWeight: "700",
-    color: "#111",
-    letterSpacing: 2,
-    fontFamily: "System",
-  },
+  questionBadgeText: { color: "#fff", fontSize: 11, fontWeight: "700" },
+  questionText: { fontSize: 15, fontWeight: "600", color: "#1A2B2B", lineHeight: 22 },
+  weightLabel: { fontSize: 12, color: "#888", marginTop: 10 },
 
-  // Rəng
-  colorCard: {
-    width: "100%",
-    height: 160,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  colorCardText: { fontSize: 32, fontWeight: "800", letterSpacing: 4 },
-
-  // Kontrast
-  contrastCard: {
-    width: "100%",
-    height: 160,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  contrastLetter: { fontSize: 72, fontWeight: "700" },
-
-  question: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1A2B2B",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  optionsWrap: { width: "100%", gap: 10 },
+  optionsWrap: { gap: 10, marginBottom: 20 },
   optionBtn: {
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-    borderRadius: 12,
+    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.8)",
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: "transparent",
+    gap: 12,
   },
-  optionText: { fontSize: 15, fontWeight: "600", color: "#333" },
+  optionBtnSelected: {
+    backgroundColor: "#EAF7EE",
+    borderColor: "#A3C9A8",
+  },
+  optionDot: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: "#aaa",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionDotSelected: { borderColor: "#27AE60" },
+  optionDotInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#27AE60" },
+  optionTextWrap: { flex: 1 },
+  optionScore: { fontSize: 11, color: "#888", marginBottom: 2 },
+  optionLabel: { fontSize: 14, fontWeight: "600", color: "#333" },
+  optionLabelSelected: { color: "#1A5C35" },
+
+  nextBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#A3C9A8",
+    paddingVertical: 15,
+    borderRadius: 14,
+  },
+  nextBtnDisabled: { backgroundColor: "#C5D9C7", opacity: 0.6 },
+  nextBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 
   // Nəticə
   resultScroll: { padding: 16, paddingBottom: 40 },
   resultHeading: { fontSize: 22, fontWeight: "bold", color: "#073D3D", textAlign: "center", marginBottom: 20 },
   resultCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 2,
+    alignItems: "center",
+  },
+  resultEmoji: { fontSize: 36, marginBottom: 8 },
+  resultTitle: { fontSize: 20, fontWeight: "800", textAlign: "center", marginBottom: 4 },
+  resultSubtitle: { fontSize: 14, fontWeight: "600", marginBottom: 12 },
+  resultDesc: { fontSize: 14, color: "#333", lineHeight: 20, textAlign: "center" },
+
+  scaleCard: {
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 14,
-    padding: 18,
+    padding: 16,
     marginBottom: 14,
     shadowColor: "#000",
-    shadowOpacity: 0.07,
+    shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 3,
   },
-  resultCardTitle: { fontSize: 13, color: "#888", marginBottom: 8, fontWeight: "600", textTransform: "uppercase" },
-  resultAcuity: { fontSize: 22, fontWeight: "800", marginBottom: 6 },
-  resultNote: { fontSize: 13, color: "#555", marginTop: 6, lineHeight: 18 },
-  resultSub: { fontSize: 14, color: "#444", marginTop: 4 },
-  resultRow: { flexDirection: "row", gap: 8, marginTop: 8, alignItems: "center" },
-  colorDot: {
-    width: 32, height: 32, borderRadius: 16,
-    alignItems: "center", justifyContent: "center",
-    borderWidth: 3,
+  scaleTitle: { fontSize: 13, color: "#888", marginBottom: 10, fontWeight: "700", textTransform: "uppercase" },
+  scaleRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 6 },
+  scaleDot: { width: 12, height: 12, borderRadius: 6 },
+  scaleRange: { fontSize: 13, fontWeight: "700", color: "#333", width: 60 },
+  scaleLabel: { fontSize: 13, color: "#555" },
+
+  summaryCard: {
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 3,
   },
+  summaryTitle: { fontSize: 13, color: "#888", marginBottom: 10, fontWeight: "700", textTransform: "uppercase" },
+  summaryRow: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
+  summaryQ: { fontSize: 12, fontWeight: "700", color: "#073D3D", width: 28 },
+  summaryAns: { flex: 1, fontSize: 12, color: "#444" },
+  summaryScore: { fontSize: 13, fontWeight: "700", color: "#A3C9A8", width: 36, textAlign: "right" },
+  summaryTotal: { flexDirection: "row", justifyContent: "space-between", marginTop: 10, paddingTop: 8, borderTopWidth: 2, borderTopColor: "#E0E0E0" },
+  summaryTotalLabel: { fontSize: 15, fontWeight: "700", color: "#333" },
+  summaryTotalValue: { fontSize: 18, fontWeight: "800" },
+
   btn: {
     flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center",
     gap: 8, backgroundColor: "#A3C9A8", paddingVertical: 13, borderRadius: 12,

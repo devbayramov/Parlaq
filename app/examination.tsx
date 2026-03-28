@@ -46,6 +46,12 @@ export default function Examination() {
       icon: "tooth",
       route: "/examination-detail/dental",
     },
+    {
+      id: "6",
+      title: t.sleepExam,
+      icon: "sleep",
+      route: "/examination-detail/sleep",
+    },
   ];
 
   return (
