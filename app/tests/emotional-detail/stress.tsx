@@ -1,64 +1,53 @@
-import ExaminationDetailComponent, {
-    ExaminationTest,
-} from "@/components/ExaminationDetailComponent";
+import LikertScaleTestComponent, {
+  LikertScaleTest,
+} from "@/components/LikertScaleTestComponent";
 
-const stressTest: ExaminationTest = {
+const stressTest: LikertScaleTest = {
   title: "Stress İdarəetməsi",
   icon: "head-flash",
+  instruction: "Son 1 ay ərzində aşağıdakı halları nə qədər tez-tez yaşadınız?",
   steps: [
     {
       id: "1",
-      question: "Stresli vəziyyətlərdə necə davranırsınız?",
-      content: "Stress reaksiyası",
-      answers: [
-        { text: "Sakit qalıb həll yolu tapıram", correct: true },
-        { text: "Narahat oluram amma başa çıxıram", correct: true },
-        { text: "Panikaya düşürəm", correct: false },
-      ],
+      question: "Gözlənilmədən baş verən hadisələr səbəbiylə özünüzü gərgin hiss etdiniz?",
     },
     {
       id: "2",
-      question: "Gərgin müddətlərdə yuxunuz necə olur?",
-      content: "Yuxu keyfiyyəti",
-      answers: [
-        { text: "Normal yatıram", correct: true },
-        { text: "Bir az pozulur", correct: true },
-        { text: "Heç yata bilmirəm", correct: false },
-      ],
+      question: "Həyatınızdakı vacib məsələləri idarə edə bilmədiyinizi hiss etdiniz?",
     },
     {
       id: "3",
-      question: "Stressi azaltmaq üçün nə edirsiniz?",
-      content: "Stress azaltma",
-      answers: [
-        { text: "İdman və ya meditasiya", correct: true },
-        { text: "Hobbi ilə məşğul oluram", correct: true },
-        { text: "Heç nə etmirəm", correct: false },
-      ],
+      question: "Sinirli və ya stress altında olduğunuzu hiss etdiniz?",
     },
     {
       id: "4",
-      question: "İş yükü artanda necə hiss edirsiniz?",
-      content: "İş stressi",
-      answers: [
-        { text: "Prioritet qoyuram və idarə edirəm", correct: true },
-        { text: "Bir az narahat oluram", correct: true },
-        { text: "Tamamilə bunalıram", correct: false },
-      ],
+      question: "Gərginlik səbəbindən yuxu problemi yaşadınız?",
     },
     {
       id: "5",
-      question: "Stress fiziki sağlamlığınıza təsir edir?",
-      content: "Fiziki təsir",
-      answers: [
-        { text: "Xeyr, idarə edirəm", correct: true },
-        { text: "Bəzən", correct: true },
-        { text: "Bəli, çox təsir edir", correct: false },
-      ],
+      question: "Çox sayda problem üst-üstə yığıldığı üçün başa çıxa bilmədiyinizi hiss etdiniz?",
     },
   ],
+  answers: [
+    { text: "Heç vaxt", value: 0 },
+    { text: "Nadir hallarda", value: 1 },
+    { text: "Bəzən", value: 2 },
+    { text: "Tez-tez", value: 3 },
+    { text: "Həmişə", value: 4 },
+  ],
+  maxRawScore: 20,
+  multiplier: 1,
+  reverseScoring: true,
+  hideScore: false,
+  thresholds: {
+    value: 12,
+    warningMessage:
+      "Stres səviyyəniz yüksəkdir. Bir mütəxəssislə məsləhətləşməyiniz tövsiyə olunur.",
+    successMessage:
+      "Stres səviyyəniz nəzarət altındadır. Sağlıqlı həyat tərzinizi davam etdirin.",
+  },
 };
 
 export default function StressTest() {
-  return <ExaminationDetailComponent test={stressTest} />;
+  return <LikertScaleTestComponent test={stressTest} />;
 }
