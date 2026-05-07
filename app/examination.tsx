@@ -52,6 +52,12 @@ export default function Examination() {
       icon: "sleep",
       route: "/examination-detail/sleep",
     },
+    {
+      id: "7",
+      title: t.whodasExam,
+      icon: "clipboard-pulse-outline",
+      route: "/examination-detail/whodas",
+    },
   ];
 
   return (

@@ -94,6 +94,7 @@ interface Translations {
   nerveExam: string;
   dentalExam: string;
   sleepExam: string;
+  whodasExam: string;
 
   // Sports
   sportsExercises: string;
@@ -282,6 +283,7 @@ const translations: Record<Language, Translations> = {
     nerveExam: "Sinir yoxlanışı",
     dentalExam: "Diş yoxlanışı",
     sleepExam: "Yuxu keyfiyyəti",
+    whodasExam: "Əlillik Qiymətləndirməsi",
 
     // Sports
     sportsExercises: "İdman Hərəkətləri",
@@ -466,6 +468,7 @@ const translations: Record<Language, Translations> = {
     nerveExam: "Nerve Examination",
     dentalExam: "Dental Examination",
     sleepExam: "Sleep Quality",
+    whodasExam: "Disability Assessment",
 
     // Sports
     sportsExercises: "Sport Exercises",
@@ -650,6 +653,7 @@ const translations: Record<Language, Translations> = {
     nerveExam: "Неврологический осмотр",
     dentalExam: "Стоматологический осмотр",
     sleepExam: "Качество сна",
+    whodasExam: "Оценка инвалидности",
 
     // Sports
     sportsExercises: "Спортивные упражнения",
