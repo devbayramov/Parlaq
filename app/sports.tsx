@@ -34,6 +34,7 @@ export default function Sports() {
   const [showAgeModal, setShowAgeModal] = useState(false);
   const [ageInput, setAgeInput] = useState("");
   const [savingAge, setSavingAge] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Exercise categories for kids (under 15)
   const kidsSportGroups: SportsOption[] = [
@@ -86,7 +87,7 @@ export default function Sports() {
       title: "Üst Bədən Məşqləri",
       description: "Qol, çiyin və döş əzələləri üçün",
       icon: "arm-flex",
-      image: "https://images.unsplash.com/photo-1581009146145-b5ef050c149a?w=400",
+      image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400",
       route: "/sports-detail/adults-upper",
     },
     {
@@ -219,11 +220,18 @@ export default function Sports() {
             style={styles.sportBox}
             onPress={() => router.push(sport.route as any)}
           >
-            <Image
-              source={{ uri: sport.image }}
-              style={styles.sportImage}
-              resizeMode="cover"
-            />
+            {failedImages.has(sport.id) ? (
+              <View style={styles.imagePlaceholder}>
+                <MaterialCommunityIcons name={sport.icon as any} size={48} color="#A3C9A8" />
+              </View>
+            ) : (
+              <Image
+                source={{ uri: sport.image }}
+                style={styles.sportImage}
+                resizeMode="cover"
+                onError={() => setFailedImages((prev) => new Set(prev).add(sport.id))}
+              />
+            )}
             <View style={styles.sportContent}>
               <MaterialCommunityIcons
                 name={sport.icon as any}
@@ -362,6 +370,13 @@ const styles = StyleSheet.create({
   sportImage: {
     width: "100%",
     height: 120,
+  },
+  imagePlaceholder: {
+    width: "100%",
+    height: 120,
+    backgroundColor: "rgba(163, 201, 168, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   sportContent: {
     flexDirection: "row",
